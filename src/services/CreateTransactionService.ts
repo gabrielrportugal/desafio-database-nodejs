@@ -1,9 +1,9 @@
-import { getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import Transaction from '../models/Transaction';
-import Category from '../models/Category';
 import AppError from '../errors/AppError';
+import CreateCategoryService from './CreateCategoryService';
 
 interface Request {
   title: string;
@@ -20,8 +20,6 @@ class CreateTransactionService {
     category,
   }: Request): Promise<Transaction> {
     const transactionRepository = getCustomRepository(TransactionsRepository);
-    const categoryRepository = getRepository(Category);
-    let categoryId = '';
 
     const checkBalance = await transactionRepository.getBalance();
 
@@ -29,24 +27,14 @@ class CreateTransactionService {
       throw new AppError('Insufficient funds', 400);
     }
 
-    const checkCategoryExists = await categoryRepository.findOne({
-      where: { title: category },
-    });
+    const createCategory = new CreateCategoryService();
 
-    if (!checkCategoryExists) {
-      const newCategory = categoryRepository.create({
-        title: category,
-      });
-      await categoryRepository.save(newCategory);
-      categoryId = newCategory.id;
-    } else {
-      categoryId = checkCategoryExists.id;
-    }
+    const categoryObject = await createCategory.execute(category);
 
     const transaction = transactionRepository.create({
       title,
       value,
-      category_id: categoryId,
+      category_id: categoryObject.id,
       type,
     });
 
