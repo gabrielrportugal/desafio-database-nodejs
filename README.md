@@ -19,4 +19,4 @@ Nessa desafio está sendo desenvolvido o back-end de uma aplicação de transaç
 - [X] should be able to list the transactions
 - [X] should not be able to create outcome transaction without a valid balance
 - [X] should be able to delete a transaction
-- [ ] should be able to import transactions
+- [X] should be able to import transactions
