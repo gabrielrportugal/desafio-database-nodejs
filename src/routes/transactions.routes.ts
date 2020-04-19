@@ -9,6 +9,7 @@ import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransactionService';
 import DeleteTransactionService from '../services/DeleteTransactionService';
 import ImportTransactionsService from '../services/ImportTransactionsService';
+
 import AppError from '../errors/AppError';
 import uploadConfig from '../config/uploadConfig';
 
@@ -69,13 +70,11 @@ transactionsRouter.post(
   '/import',
   upload.single('file'),
   async (request, response) => {
-    const importedFilename = request.file.filename;
-
     const importTransactions = new ImportTransactionsService();
 
-    const transactions = await importTransactions.execute({ importedFilename });
+    const transactions = await importTransactions.execute(request.file.path);
 
-    return response.json(transactions);
+    return response.status(200).json(transactions);
   },
 );
 
