@@ -24,14 +24,6 @@ transactionsRouter.get('/', async (request, response) => {
     relations: ['category'],
   });
 
-  transactions.map(transaction => {
-    delete transaction.created_at;
-    delete transaction.updated_at;
-    delete transaction.category_id;
-    delete transaction.category.created_at;
-    delete transaction.category.updated_at;
-  });
-
   const balance = await transactionsRepository.getBalance();
 
   return response.status(200).json({ transactions, balance });
